@@ -4,6 +4,7 @@
   "type": "module",
   "description": "Always-on, event-driven AI harness: provider-agnostic brain, restart-safe lane coordinator.",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs"
   }
 }
