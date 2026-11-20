@@ -73,7 +73,9 @@ CREATE TABLE lane_transitions (
 );
 
 -- Idempotency ledger for externally visible effects (PR opened, message sent).
--- A resumed lane re-attempts the effect and the ledger absorbs the duplicate.
+-- Keys are NOT random: they are sha256(lane_id, checkpoint_seq, effect_index, kind)
+-- so a resumed lane replays the same key and the ledger absorbs the duplicate,
+-- while a forked lane (new checkpoint_seq) mints fresh keys for genuinely new work.
 CREATE TABLE side_effects (
   idempotency_key TEXT PRIMARY KEY,
   lane_id         TEXT NOT NULL REFERENCES lanes (id) ON DELETE CASCADE,
