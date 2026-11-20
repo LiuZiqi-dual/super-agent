@@ -1,0 +1,73 @@
+/* Lane Coordinator 设计语言 v0.1 · 整屏用的部分（2026-11-12）
+   和 lc.css 一起引用。这里放页面框架、表单、验收、合并卡。颜色只用 lc.css 里的变量。 */
+
+/* ---------- 页面框架 ---------- */
+.lc-page{min-height:900px;display:flex;flex-direction:column}
+.lc-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 28px;background:var(--panel);border-bottom:1px solid var(--line)}
+.lc-brand{font-size:16px;font-weight:700;color:var(--ink);text-decoration:none}
+.lc-tag{font-size:12px;padding:0 8px;border:1px solid var(--line);border-radius:4px;color:var(--sub)}
+.lc-crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--sub)}
+.lc-grow{flex:1 1 auto}
+.lc-a{text-decoration:none}
+.lc-gate{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+.lc-slots{display:inline-flex;gap:3px}
+.lc-slot{width:14px;height:8px;box-sizing:border-box;border:1.5px solid var(--stop);border-radius:2px}
+.lc-slot.on{border-color:var(--ask);background:var(--ask)}
+.lc-seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.lc-seg-i{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:0;background:var(--panel);color:var(--sub);font:inherit;font-size:13px;cursor:pointer}
+.lc-seg-i.on{background:var(--sel);color:var(--ink);font-weight:600}
+.lc-body{box-sizing:border-box;width:100%;max-width:1500px;margin:0 auto;padding:20px 28px 36px;display:flex;flex-direction:column;gap:18px}
+.lc-cols{display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px}
+.lc-col{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.lc-side{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.lc-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px}
+.lc-h{margin:0;font-size:14px;font-weight:700}
+.lc-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--sub)}
+.lc-box{display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.lc-stack{display:flex;flex-direction:column;gap:10px}
+.lc-hero{display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-width:920px}
+.lc-measure{max-width:760px}
+.lc-kv{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px 14px}
+.lc-k{font-size:13px;color:var(--sub);padding-top:1px}
+.lc-task-name{flex:1 1 90px}
+.lc-step-time{white-space:nowrap}
+
+/* 窄屏：等你处理的那一栏排到前面，先能拍板 */
+@media (max-width:760px){.lc-side{order:-1}.lc-bar{padding:10px 16px}.lc-body{padding:16px 16px 28px}}
+
+/* ---------- 总览：一行里最要紧的几步 ---------- */
+.lc-steps{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding-top:6px;font-size:13px}
+.lc-chip{display:inline-flex;align-items:baseline;gap:6px;padding:2px 8px;border:1px solid var(--line-soft);border-radius:4px;background:var(--band)}
+.lc-chip.now{border-color:var(--ask);background:var(--ask-bg)}
+.lc-chip-who{font-size:12px;font-weight:700;color:var(--sub)}
+.lc-sep{color:var(--sub)}
+
+/* ---------- 经过：通往原话的入口 ---------- */
+.lc-who-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.lc-orig{font-size:12px;color:var(--sub);text-decoration:underline;cursor:pointer}
+
+/* ---------- 等你的另外两种：验收入口、合并卡 ---------- */
+.lc-todo{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;background:var(--panel);border:2px solid var(--ask);border-radius:4px}
+
+/* ---------- 预算条 ---------- */
+.lc-meter{display:inline-block;width:64px;height:6px;border-radius:3px;background:var(--line);overflow:hidden;vertical-align:middle}
+.lc-meter-fill{display:block;height:100%;background:var(--ink)}
+
+/* ---------- 验收 ---------- */
+.lc-ref{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;font-size:11px;padding:0 5px;border:1px solid var(--line);border-radius:3px;color:var(--sub);white-space:nowrap}
+.lc-flag{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1.5px dashed var(--ink);border-radius:4px;background:var(--band)}
+.lc-factrow{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:10px;padding:9px 0;border-top:1px solid var(--line-soft)}
+.lc-factrow-first{border-top:0;padding-top:0}
+.lc-shot{display:flex;align-items:center;justify-content:center;min-height:120px;padding:12px;border:1px dashed var(--line);border-radius:4px;color:var(--sub);font-size:13px;text-align:center}
+.lc-flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13px}
+
+/* ---------- 表单 ---------- */
+.lc-form{display:flex;flex-direction:column;gap:16px;max-width:920px}
+.lc-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px 20px}
+.lc-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lc-label{font-weight:600}
+.lc-area{box-sizing:border-box;width:100%;min-height:76px;padding:10px 12px;border:1px solid var(--stop);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;line-height:1.55;resize:vertical}
+.lc-select{min-height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--stop);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit}
+.lc-check{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.lc-cbox{width:16px;height:16px;margin:0;accent-color:var(--ink)}
+.lc-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:8px}

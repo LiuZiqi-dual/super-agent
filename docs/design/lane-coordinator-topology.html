@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0}</style>
+<title>Lane Coordinator 拓扑</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* 版式：一张纵向分层的拓扑图居中，图下面是两栏短注。颜色只有两种有含义：边界色和接缝色。 */
+:root{
+  --bg:#f3f5f6; --surface:#ffffff; --zone:#e8edf0; --ink:#18222a; --muted:#56646e;
+  --line:#9aa7b0; --arrow:#3a4852; --boundary:#b4500b; --seam:#2a6a8a; --seam-bg:#dcebf2;
+  --font:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12181c; --surface:#1d272d; --zone:#171f24; --ink:#e4eaed; --muted:#9babb5;
+    --line:#52626c; --arrow:#b3c0c8; --boundary:#f0a04b; --seam:#6bb3d6; --seam-bg:#1b3442;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12181c; --surface:#1d272d; --zone:#171f24; --ink:#e4eaed; --muted:#9babb5;
+  --line:#52626c; --arrow:#b3c0c8; --boundary:#f0a04b; --seam:#6bb3d6; --seam-bg:#1b3442;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--font);
+  padding-block:28px 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:6px}
+h1{font-size:26px;line-height:1.25;margin:0;font-weight:650;letter-spacing:.01em;text-wrap:balance}
+.status{font:12.5px/1.4 var(--mono);color:var(--muted);letter-spacing:.02em}
+.lede{margin:0;max-width:44em;color:var(--ink)}
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--bg)}
+svg{display:block;width:100%;min-width:900px;height:auto;font-family:var(--font)}
+figcaption{color:var(--muted);font-size:14px;max-width:52em}
+svg text{fill:var(--ink);font-size:12px}
+svg .tt{font-weight:650;font-size:13px}
+svg .big{font-weight:650;font-size:14.5px}
+svg .sm{fill:var(--muted)}
+svg .em{font-weight:650}
+svg .lb{fill:var(--ink);font-size:12px}
+svg .box{fill:var(--surface);stroke:var(--line);stroke-width:1.25}
+svg .key{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+svg .sub{fill:var(--zone);stroke:var(--line);stroke-width:1.25}
+svg .zone{fill:var(--zone);stroke:var(--boundary);stroke-width:2}
+svg .seam{fill:var(--seam-bg);stroke:var(--seam);stroke-width:1.5}
+svg .store{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+svg .chip{fill:var(--ink);stroke:none}
+svg .chipt{fill:var(--bg);font-weight:650;font-size:12px}
+svg .later{opacity:.62}
+svg .ar{stroke:var(--arrow);stroke-width:1.5;fill:none}
+svg .unv{stroke-dasharray:6 4}
+svg .bline{stroke:var(--boundary);stroke-width:2;fill:none}
+svg .mk{fill:var(--arrow)}
+svg .chk{fill:var(--boundary);stroke:var(--bg);stroke-width:1.5}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:26px 40px}
+.notes section{min-width:0;display:flex;flex-direction:column;gap:8px}
+h2{font-size:15px;margin:0;font-weight:650;padding-bottom:6px;border-bottom:1px solid var(--line)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+dt{font-weight:650;white-space:nowrap}
+dd{margin:0;min-width:0}
+ul{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:5px}
+p{margin:0}
+code{font:13px var(--mono)}
+.mine{color:var(--seam);font-weight:650}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="status">提议稿 v3 · 2026-11-12 · 还没写进方案文档</div>
+  <h1>Lane Coordinator 技术拓扑</h1>
+  <p class="lede">协调器站在所有执行进程之外。它自己只有三样东西：一个纯代码的内核、一个不能执行的 Router、一本落盘的台账。干活的进程和背后的模型都可以换，台账里的任务不跟着换。</p>
+</header>
+
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 960 990" role="img" aria-label="Lane Coordinator 拓扑：交互面和外部事件从上方进入协调内核，Router 的提议、Watchdog 的建议和泳道的上报从下方的检查点进入内核，所有输入都先到事件归一。内核把未订阅的事件合批交给 Router，把已订阅的事件配好上下文包后直通投递到泳道。台账里持久的是任务和它的授权范围，执行实例会换。上下文包生成器从台账读，给泳道配包，也给人配包。Watchdog 在系统之外只读台账。Router 和 Watchdog 发给模型的内容先过外发检查。">
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mk"/></marker>
+</defs>
+
+<!-- 顶部：外部事件和人 -->
+<g class="later">
+<rect x="70" y="24" width="290" height="60" class="box"/>
+<text x="215" y="49" text-anchor="middle" class="tt">外部事件源（第一版不接）</text>
+<text x="215" y="69" text-anchor="middle" class="sm">代码托管 · CI · 定时</text>
+</g>
+
+<rect x="520" y="24" width="380" height="60" class="box"/>
+<text x="710" y="49" text-anchor="middle" class="tt">交互面（你在这里）</text>
+<text x="710" y="69" text-anchor="middle" class="sm">工作台 · 命令行 · 以后接 IM</text>
+
+<!-- 协调内核 -->
+<rect x="40" y="140" width="890" height="380" class="zone"/>
+<text x="56" y="164" class="big">协调内核 · 纯代码，不调模型</text>
+
+<rect x="70" y="178" width="530" height="52" class="box"/>
+<text x="335" y="209" text-anchor="middle"><tspan class="tt">事件归一 · 按规则过滤</tspan><tspan class="sm">　所有圆点进来的消息都先到这里</tspan></text>
+
+<rect x="70" y="276" width="220" height="56" class="box"/>
+<text x="180" y="299" text-anchor="middle" class="tt">合批队列</text>
+<text x="180" y="319" text-anchor="middle" class="sm">攒一批再叫醒 Router</text>
+
+<rect x="360" y="276" width="240" height="56" class="box"/>
+<text x="480" y="299" text-anchor="middle" class="tt">订阅表</text>
+<text x="480" y="319" text-anchor="middle" class="sm">线程和任务，多对多</text>
+
+<rect x="700" y="276" width="200" height="56" class="key"/>
+<text x="800" y="299" text-anchor="middle" class="tt">上下文包生成器</text>
+<text x="800" y="319" text-anchor="middle" class="sm">给泳道和给你，同一个部件</text>
+
+<rect x="360" y="386" width="240" height="114" class="store"/>
+<text x="480" y="406" text-anchor="middle" class="tt">台账（落盘）</text>
+<text x="420" y="426" text-anchor="middle" class="em">任务（持久）</text>
+<text x="540" y="426" text-anchor="middle" class="sm">执行实例（会换）</text>
+<text x="420" y="444" text-anchor="middle" class="em">授权范围</text>
+<text x="540" y="444" text-anchor="middle" class="sm">上报流水</text>
+<text x="420" y="462" text-anchor="middle" class="em">停下时的状态</text>
+<text x="540" y="462" text-anchor="middle" class="sm">决定记录</text>
+<rect x="374" y="470" width="92" height="22" rx="11" class="chip"/>
+<text x="420" y="485" text-anchor="middle" class="chipt">待人处理</text>
+<text x="540" y="485" text-anchor="middle" class="sm">引用边 · 大对象</text>
+
+<rect x="700" y="386" width="200" height="56" class="box"/>
+<text x="800" y="409" text-anchor="middle" class="tt">投递器</text>
+<text x="800" y="429" text-anchor="middle" class="sm">先记账再执行 · 送达确认</text>
+
+<!-- 顶部进出内核 -->
+<line x1="310" y1="84" x2="310" y2="178" class="ar later" marker-end="url(#ah)"/>
+<text x="318" y="118" class="lb later">事件</text>
+<line x1="560" y1="84" x2="560" y2="178" class="ar" marker-end="url(#ah)"/>
+<text x="552" y="118" text-anchor="end" class="lb">消息 · 决定</text>
+<line x1="800" y1="276" x2="800" y2="84" class="ar" marker-end="url(#ah)"/>
+<text x="808" y="118" class="lb">上下文包 · 待你处理</text>
+
+<!-- 内核内部 -->
+<line x1="480" y1="230" x2="480" y2="276" class="ar" marker-end="url(#ah)"/>
+<text x="488" y="258" class="lb">查订阅</text>
+<line x1="360" y1="304" x2="290" y2="304" class="ar" marker-end="url(#ah)"/>
+<text x="325" y="296" text-anchor="middle" class="lb">未订阅</text>
+<line x1="600" y1="298" x2="700" y2="298" class="ar" marker-end="url(#ah)"/>
+<text x="650" y="290" text-anchor="middle" class="lb">已订阅 · 直通</text>
+<line x1="480" y1="332" x2="480" y2="386" class="ar" marker-end="url(#ah)"/>
+<text x="488" y="364" class="lb">落盘</text>
+<polyline points="600,410 650,410 650,322 700,322" class="ar" marker-end="url(#ah)"/>
+<text x="658" y="372" class="lb">读</text>
+<line x1="800" y1="332" x2="800" y2="386" class="ar" marker-end="url(#ah)"/>
+<text x="808" y="364" class="lb">配好包</text>
+
+<!-- 内核 与 Router -->
+<polyline points="55,580 55,204 70,204" class="ar" marker-end="url(#ah)"/>
+<text x="63" y="556" class="lb">提议：派单 · 归并 · 回复</text>
+<line x1="230" y1="332" x2="230" y2="580" class="ar" marker-end="url(#ah)"/>
+<text x="238" y="556" class="lb">合批唤醒</text>
+
+<!-- 内核 与 Watchdog -->
+<line x1="390" y1="500" x2="390" y2="580" class="ar" marker-end="url(#ah)"/>
+<text x="382" y="556" text-anchor="end" class="lb">只读</text>
+<line x1="430" y1="580" x2="430" y2="527" class="ar" marker-end="url(#ah)"/>
+<text x="438" y="556" class="lb">提建议</text>
+
+<!-- 内核 与 泳道（未验证） -->
+<line x1="650" y1="580" x2="650" y2="527" class="ar unv" marker-end="url(#ah)"/>
+<text x="658" y="556" class="lb">上报 · 要人</text>
+<line x1="800" y1="442" x2="800" y2="580" class="ar unv" marker-end="url(#ah)"/>
+<text x="808" y="556" class="lb">派单 · 投递 · 打断</text>
+
+<!-- Router -->
+<rect x="40" y="580" width="260" height="100" class="box"/>
+<text x="170" y="608" text-anchor="middle" class="big">Router</text>
+<text x="170" y="632" text-anchor="middle" class="sm">常驻 · 轻模型 · 没有执行工具</text>
+<text x="170" y="654" text-anchor="middle" class="sm">只提议，内核校验后才生效</text>
+
+<!-- Watchdog：系统之外 -->
+<rect x="330" y="580" width="160" height="100" class="box"/>
+<text x="410" y="608" text-anchor="middle" class="big">Watchdog</text>
+<text x="410" y="632" text-anchor="middle" class="sm">独立进程，只读台账</text>
+<text x="410" y="654" text-anchor="middle" class="sm">只提建议，不动手</text>
+
+<!-- 模型接缝 -->
+<line x1="170" y1="680" x2="170" y2="733" class="ar" marker-end="url(#ah)"/>
+<text x="178" y="712" class="lb">调模型</text>
+<line x1="410" y1="680" x2="410" y2="733" class="ar" marker-end="url(#ah)"/>
+<text x="418" y="712" class="lb">调模型</text>
+
+<rect x="40" y="740" width="450" height="52" class="seam"/>
+<text x="265" y="763" text-anchor="middle" class="tt">模型接口 · 提供方可替换</text>
+<text x="265" y="782" text-anchor="middle" class="sm">外发检查：什么内容能发给哪家</text>
+
+<line x1="105" y1="792" x2="105" y2="830" class="ar"/>
+<line x1="265" y1="792" x2="265" y2="830" class="ar"/>
+<line x1="425" y1="792" x2="425" y2="830" class="ar"/>
+<rect x="40" y="830" width="130" height="36" class="box"/>
+<text x="105" y="853" text-anchor="middle">Anthropic</text>
+<rect x="200" y="830" width="130" height="36" class="box"/>
+<text x="265" y="853" text-anchor="middle">OpenAI 兼容</text>
+<rect x="360" y="830" width="130" height="36" class="box"/>
+<text x="425" y="853" text-anchor="middle">本地模型</text>
+<text x="265" y="888" text-anchor="middle" class="sm">只是例子，不是已支持的清单</text>
+
+<!-- 泳道契约与泳道 -->
+<rect x="510" y="580" width="410" height="70" class="seam"/>
+<text x="715" y="602" text-anchor="middle" class="tt">泳道契约 · 执行体可替换</text>
+<text x="715" y="621" text-anchor="middle" class="sm">向下：启动、投递、打断　向上：上报、要人</text>
+<text x="715" y="640" text-anchor="middle" class="sm">泳道之间不直连，都经内核</text>
+
+<rect x="510" y="674" width="195" height="226" class="zone"/>
+<text x="522" y="695" class="tt">泳道 A</text>
+<rect x="526" y="708" width="163" height="50" class="box"/>
+<text x="607" y="729" text-anchor="middle" class="tt">泳道负责人</text>
+<text x="607" y="747" text-anchor="middle" class="sm">执行实例，自带模型</text>
+<line x1="563" y1="758" x2="563" y2="798" class="ar" marker-end="url(#ah)"/>
+<line x1="652" y1="758" x2="652" y2="798" class="ar" marker-end="url(#ah)"/>
+<text x="607" y="783" text-anchor="middle" class="lb">自己派活</text>
+<rect x="526" y="798" width="74" height="34" class="sub"/>
+<text x="563" y="819" text-anchor="middle" class="sm">子执行体</text>
+<rect x="615" y="798" width="74" height="34" class="sub"/>
+<text x="652" y="819" text-anchor="middle" class="sm">子执行体</text>
+<text x="607" y="858" text-anchor="middle">例：Claude Code</text>
+<text x="607" y="880" text-anchor="middle" class="sm">内部对协调器不透明</text>
+
+<rect x="725" y="674" width="195" height="226" class="zone"/>
+<text x="737" y="695" class="tt">泳道 B</text>
+<rect x="741" y="708" width="163" height="50" class="box"/>
+<text x="822" y="729" text-anchor="middle" class="tt">泳道负责人</text>
+<text x="822" y="747" text-anchor="middle" class="sm">执行实例，自带模型</text>
+<line x1="778" y1="758" x2="778" y2="798" class="ar" marker-end="url(#ah)"/>
+<line x1="867" y1="758" x2="867" y2="798" class="ar" marker-end="url(#ah)"/>
+<text x="822" y="783" text-anchor="middle" class="lb">自己派活</text>
+<rect x="741" y="798" width="74" height="34" class="sub"/>
+<text x="778" y="819" text-anchor="middle" class="sm">子执行体</text>
+<rect x="830" y="798" width="74" height="34" class="sub"/>
+<text x="867" y="819" text-anchor="middle" class="sm">子执行体</text>
+<text x="822" y="858" text-anchor="middle">例：Codex、DSH</text>
+<text x="822" y="880" text-anchor="middle" class="sm">内部对协调器不透明</text>
+
+<line x1="607" y1="650" x2="607" y2="708" class="ar unv" marker-start="url(#ah)" marker-end="url(#ah)"/>
+<line x1="822" y1="650" x2="822" y2="708" class="ar unv" marker-start="url(#ah)" marker-end="url(#ah)"/>
+
+<rect x="510" y="916" width="410" height="34" class="box"/>
+<text x="715" y="938" text-anchor="middle" class="sm">执行环境：先在本机，以后可换远端主机或容器</text>
+
+<!-- 检查点 -->
+<circle cx="310" cy="140" r="5.5" class="chk"/>
+<circle cx="560" cy="140" r="5.5" class="chk"/>
+<circle cx="55" cy="520" r="5.5" class="chk"/>
+<circle cx="430" cy="520" r="5.5" class="chk"/>
+<circle cx="650" cy="520" r="5.5" class="chk"/>
+<circle cx="170" cy="740" r="5.5" class="chk"/>
+<circle cx="410" cy="740" r="5.5" class="chk"/>
+
+<!-- 图例 -->
+<line x1="40" y1="928" x2="80" y2="928" class="ar unv"/>
+<text x="92" y="932" class="sm">虚线：还没验证过的边</text>
+<rect x="300" y="920" width="40" height="16" class="seam"/>
+<text x="352" y="932" class="sm">蓝底：可替换的接缝</text>
+<line x1="40" y1="950" x2="80" y2="950" class="bline"/>
+<text x="92" y="954" class="sm">橙线：信任边界和泳道的隔离边界</text>
+<circle cx="60" cy="972" r="5.5" class="chk"/>
+<text x="92" y="976" class="sm">圆点：检查点。进内核的先到事件归一，发给模型的先过外发检查</text>
+</svg>
+</div>
+<figcaption>所有输入都从圆点进内核，泳道的上报也一样，所以 A 的上报能触发给 B 的投递。台账里持久的是任务和它的授权范围，执行实例会换。Router 只提议，内核校验、记账之后才执行。蓝色底的两块是可以替换的接缝。</figcaption>
+</figure>
+
+<div class="notes">
+<section>
+  <h2>七条流</h2>
+  <dl>
+    <dt>派活</dt><dd>你说话 → 归一 → 没人订阅 → 合批叫醒 Router → Router 提议派单 → 内核校验授权和当前状态 → 先记账 → 配包 → 投递。</dd>
+    <dt>上报</dt><dd>上报也是事件，从圆点进内核。提问和阻塞立刻转给该知道的一方，普通进展只记在任务上。停下来等人时，必须同时交一份“停下时的状态”。</dd>
+    <dt>要人</dt><dd>泳道要你拍板 → 进“待人处理” → 你定 → 直通回那个任务，同时记进决定记录。</dd>
+    <dt>直通</dt><dd>已订阅线程的新事件 → 入口检查 → 订阅表 → 配包 → 投递。不叫醒 Router，也不带来新的授权。</dd>
+    <dt>协同</dt><dd>A 的关键上报进内核 → 查订阅 → 给订阅了同一线程的 B 配包投递。包上标明来源，转发有跳数上限。</dd>
+    <dt>接回</dt><dd>你切回一件事 → 生成器从台账给你配一个包。和给泳道配包是同一个部件。</dd>
+    <dt>巡检</dt><dd>Watchdog 只读台账 → 提建议 → 进“待人处理”。它不能直接改任何东西。</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>任务、执行实例、授权</h2>
+  <dl>
+    <dt>任务</dt><dd>持久。换进程、换模型、换 harness，它还是同一件事。订阅、决定和“停下时的状态”都挂在任务上。</dd>
+    <dt>执行实例</dt><dd>某一次把任务交给某个执行体。它会结束，也会被换掉。换 harness 接手叫交接，靠的是任务上的状态，不是搬运原会话。</dd>
+    <dt>授权范围</dt><dd>记在任务上，只有你能给。消息和引用的内容不能改它。要更大的范围，就开一个新任务。</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>有关联和没关联的任务</h2>
+  <dl>
+    <dt>有关联</dt><dd>要共享同一份上下文才能做的事，放进一条泳道，由负责人派子执行体。只需要对方结果的事，分成两个任务，在台账里连一条边。</dd>
+    <dt>没关联</dt><dd>它们之间唯一共享的是你。要协调的是你的注意力，靠的是每个任务“停下时的状态”和接回时的上下文包。</dd>
+  </dl>
+  <p>包里的事实由程序填，叙述由模型写并且必须引用事实。导图是台账上的一个视图：上报流水是时间轴，引用边是连线。</p>
+</section>
+
+<section>
+  <h2>两个可替换的接缝</h2>
+  <dl>
+    <dt>执行体</dt><dd>一条泳道由哪个 harness 来跑。harness 自带模型，协调器不管它用哪家。</dd>
+    <dt>模型</dt><dd>只有产品自己跑的部件走模型接口，也就是 Router 和 Watchdog。它们读到的台账内容发出去之前先过外发检查。</dd>
+  </dl>
+  <p><span class="mine">我的选择：</span>Router 是我们自己写的一个小循环，不是任何 harness 的会话。这样核心部件的模型才真的能换。代价是 Router 的上下文要自己管，每次醒来由生成器从台账配一份当前视图。官方原型的做法不同，它的路由层是 harness 上的一个会话。</p>
+</section>
+
+<section>
+  <h2>恢复由谁负责</h2>
+  <ul>
+    <li>内核用代码做机械恢复：重试没送达的投递，重启退出的执行实例。动作先记账再执行，重启后不会丢，也不会重复。</li>
+    <li>Watchdog 只做需要理解的判断，比如一直没进展、方向偏了。它的建议交给你，第一版不自动执行。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>和官方原型的关系</h2>
+  <p>文章作者公开了一个配套原型（MIT，自称研究原型）。任务和执行实例分开、授权挂在任务上、先记账再执行，这三条和它的文档一致。我们借它的模型，不用它的代码，因为它是某一个 harness 的插件。</p>
+  <p>它明说自己的命令黑名单和目录约定不是安全边界。图上泳道的橙色隔离边界要我们自己做出来并验证。</p>
+</section>
+
+<section>
+  <h2>还没验证的</h2>
+  <p>图上所有虚线：怎么启动一个执行体，怎么把消息送进去并叫醒它，它怎么上报。Claude Code 也在内。图里的 harness 和模型提供方都是举例。</p>
+  <p>原型只核对了文档的文字，没有对过代码。“你切走了”这件事，只有你的输入都经过交互面时内核才看得到。</p>
+</section>
+</div>
+</div>
+
+</html>

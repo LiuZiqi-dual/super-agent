@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<link rel="stylesheet" href="./lc-app.css" />
+<style>
+body{margin:0}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+</style>
+</helmet>
+<div class="lc {{ theme }} lc-page" data-screen-label="开新任务">
+
+<header class="lc-bar">
+<a class="lc-brand" href="Overview.dc.html">Lane Coordinator</a>
+<span class="lc-tag">样例数据</span>
+<span class="lc-crumb"><a class="lc-link" href="Overview.dc.html">总览</a><span>›</span><span class="lc-strong">开新任务</span></span>
+<span class="lc-grow"></span>
+<span class="lc-gate"><span>等你的事 3 / 5</span><span class="lc-slots"><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot"></span><span class="lc-slot"></span></span></span>
+<span class="lc-seg"><button type="button" class="{{ segL }}" onClick="{{ setLight }}">浅色</button><button type="button" class="{{ segD }}" onClick="{{ setDark }}">暗色</button></span>
+<a class="lc-btn lc-btn-main lc-a" href="NewTask.dc.html">开新任务</a>
+</header>
+
+<main class="lc-body">
+
+<div class="lc-hero">
+<div class="lc-stmt" role="heading" aria-level="1">开一个新任务</div>
+<span>任务是持久的。执行体以后可以换，任务和它的授权范围不跟着换。</span>
+</div>
+
+<form class="lc-form">
+
+<div class="lc-box">
+<div class="lc-head">
+<h2 class="lc-h">它属于哪个主任务</h2>
+<span class="lc-seg"><button type="button" class="lc-seg-i">放进已有的主任务</button><button type="button" class="lc-seg-i on">新开一个主任务</button></span>
+</div>
+<div class="lc-field">
+<span class="lc-label">主任务叫什么</span>
+<input type="text" class="lc-input" aria-label="主任务叫什么" defaultValue="会员到期提醒" />
+</div>
+<div class="lc-field">
+<span class="lc-label">想达到什么</span>
+<textarea class="lc-area" aria-label="想达到什么" defaultValue="会员到期前 7 天和前 1 天各提醒一次，用户能一键续费。"></textarea>
+<span class="lc-sub">这段话会记成这个主任务经过里的第一步。新开以后，总览里会多出一行。选“放进已有的主任务”时，这两栏换成一个选单。</span>
+</div>
+</div>
+
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">第一个任务</h2><span class="lc-sub">主任务里派出去的第一件活</span></div>
+<div class="lc-field">
+<span class="lc-label">要做什么</span>
+<textarea class="lc-area" aria-label="要做什么" defaultValue="先摸清现在的提醒是怎么发的，列出要改的地方。只读，不改代码。"></textarea>
+</div>
+<div class="lc-field">
+<span class="lc-label">先交给谁</span>
+<div class="lc-choices">
+<label class="lc-opt on"><input type="radio" class="lc-radio" name="{{ exec }}" defaultChecked="{{ true }}" /><span class="lc-strong">Claude Code</span></label>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ exec }}" /><span>Codex</span></label>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ exec }}" /><span>DSH</span></label>
+</div>
+<span class="lc-sub">以后换执行体时，靠任务上记的“停下时的状态”交接，不搬运原来的会话。</span>
+</div>
+</div>
+
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">授权范围</h2><span class="lc-sub">只有你能给。任务里的消息改不了它。</span></div>
+<div class="lc-fields">
+<div class="lc-field">
+<span class="lc-label">仓库和目录</span>
+<input type="text" class="lc-input" style="font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px" aria-label="仓库和目录" defaultValue="web-app / notify" />
+</div>
+<div class="lc-field">
+<span class="lc-label">分支</span>
+<select class="lc-select" aria-label="分支">
+<option>不建分支，只读</option>
+<option>新建一个分支</option>
+</select>
+</div>
+<div class="lc-field">
+<span class="lc-label">凭据</span>
+<select class="lc-select" aria-label="凭据">
+<option>不给任何凭据</option>
+<option>测试环境的密钥，只读</option>
+</select>
+</div>
+<div class="lc-field">
+<span class="lc-label">预算上限（美元）</span>
+<input type="text" inputMode="decimal" class="lc-input" style="font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px" aria-label="预算上限（美元）" defaultValue="5" />
+</div>
+</div>
+<div class="lc-field">
+<span class="lc-label">可以对外做的事</span>
+<div class="lc-row" style="gap: 4px 24px">
+<label class="lc-check"><input type="checkbox" class="lc-cbox" />推分支</label>
+<label class="lc-check"><input type="checkbox" class="lc-cbox" />开草稿 PR</label>
+<label class="lc-check"><input type="checkbox" class="lc-cbox" />合并</label>
+<label class="lc-check"><input type="checkbox" class="lc-cbox" />动生产环境</label>
+</div>
+<span class="lc-sub">一项都没勾，所以这个任务只能读。没勾的事，执行体做到那一步会停下来等你。以后要更大的范围，就开一个新任务。</span>
+</div>
+</div>
+
+<div class="lc-box">
+<div class="lc-field">
+<span class="lc-label">和别的任务的关系</span>
+<select class="lc-select" aria-label="和别的任务的关系">
+<option>没有关系</option>
+<option>要等另一个任务做完之后</option>
+<option>只需要另一个任务的结果</option>
+</select>
+<span class="lc-row lc-sub"><span class="lc-st"><span class="lc-mk lc-mk-wait"></span>等别的任务</span><span>选了要等谁以后，这个任务会先显示成这个状态，那边动了它才动。</span></span>
+</div>
+</div>
+
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">开始</button>
+<button type="button" class="lc-btn">存成草稿</button>
+<span class="lc-sub">现在有 3 件事在等你。满 5 件，协调器先停止派新活。</span>
+</div>
+
+</form>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"lc-light","options":["lc-light","lc-dark"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = (this.state && this.state.theme) || this.props.theme || 'lc-light';
+    return {
+      theme: theme,
+      exec: 'exec-' + theme,
+      segL: theme === 'lc-light' ? 'lc-seg-i on' : 'lc-seg-i',
+      segD: theme === 'lc-dark' ? 'lc-seg-i on' : 'lc-seg-i',
+      setLight: () => this.setState({ theme: 'lc-light' }),
+      setDark: () => this.setState({ theme: 'lc-dark' })
+    };
+  }
+}
+</script>
+</body>
+</html>

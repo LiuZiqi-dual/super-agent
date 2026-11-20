@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<link rel="stylesheet" href="./lc-app.css" />
+<style>
+body{margin:0}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+</style>
+</helmet>
+<div class="lc {{ theme }} lc-page" data-screen-label="总览">
+
+<header class="lc-bar">
+<a class="lc-brand" href="Overview.dc.html">Lane Coordinator</a>
+<span class="lc-tag">样例数据</span>
+<span class="lc-crumb"><span class="lc-strong">总览</span></span>
+<span class="lc-grow"></span>
+<span class="lc-gate"><span>等你的事 3 / 5</span><span class="lc-slots"><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot"></span><span class="lc-slot"></span></span></span>
+<span class="lc-seg"><button type="button" class="{{ segL }}" onClick="{{ setLight }}">浅色</button><button type="button" class="{{ segD }}" onClick="{{ setDark }}">暗色</button></span>
+<a class="lc-btn lc-btn-main lc-a" href="NewTask.dc.html">开新任务</a>
+</header>
+
+<main class="lc-body">
+
+<section class="lc-cells" aria-label="现在的情况">
+<div class="lc-cell"><span class="lc-sub">现在在哪</span><span class="lc-stmt">4 个主任务：2 个等你，1 个在跑，1 个停着。</span></div>
+<div class="lc-cell"><span class="lc-sub">下一步</span><span class="lc-stmt">先看预约日历改版，有任务在等它的决定。</span></div>
+<div class="lc-cell lc-cell-ask"><span class="lc-st lc-sub"><span class="lc-mk lc-mk-ask"></span>需要我做什么</span><span class="lc-stmt">拍板 1 件，验收 1 件，合并 1 件。</span></div>
+</section>
+
+<div class="lc-cols">
+
+<section class="lc-col" aria-label="主任务">
+<div class="lc-head">
+<h2 class="lc-h">主任务</h2>
+<div class="lc-legend">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span>等你</span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-run"></span>在跑</span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-wait"></span>等别的任务</span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-stop"></span>停着</span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-done"></span>做完</span>
+</div>
+</div>
+
+<div class="lc-stack">
+
+<a class="lc-main" href="MainTask.dc.html">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你拍板</span><span class="lc-sub">等了 38 分钟</span></span>
+<span class="lc-title">预约日历改版</span>
+<span>T-12 在问目标日的时段被占用时怎么办。T-13 在等这个决定。</span>
+<span class="lc-steps">
+<span class="lc-chip"><span class="lc-chip-who">你说</span>先支持把预约拖到另一天</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">T-10 回来</span>旧组件拖不了，建议换库</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">你定的</span>换拖拽库，先做周视图</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">派出</span>T-12 跨天拖拽</span><span class="lc-sep">›</span>
+<span class="lc-chip now"><span class="lc-chip-who">Codex 问你</span>时段被占用时怎么办</span>
+</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-done"></span><span class="lc-mono">T-10</span><span class="lc-sub">摸清现有日历组件</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span><span class="lc-mono">T-12</span><span class="lc-sub">跨天拖拽</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-wait"></span><span class="lc-mono">T-13</span><span class="lc-sub">冲突提示文案</span></span>
+</span>
+</a>
+
+<a class="lc-main" href="Review.dc.html">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你验收，还有 1 件等你合并</span><span class="lc-sub">等了 1 小时 55 分</span></span>
+<span class="lc-title">对账单导出</span>
+<span>T-15 说 PDF 中文乱码修好了，有 1 句话没有对应的事实。</span>
+<span class="lc-steps">
+<span class="lc-chip"><span class="lc-chip-who">你说</span>导出的 PDF 中文是乱码</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">派出</span>T-15 PDF 中文乱码</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">你说</span>批量导出也要做</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">派出</span>T-16 批量导出</span><span class="lc-sep">›</span>
+<span class="lc-chip now"><span class="lc-chip-who">Claude Code 报</span>乱码修好了，等你验收</span>
+</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span><span class="lc-mono">T-14</span><span class="lc-sub">导出按钮文案</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span><span class="lc-mono">T-15</span><span class="lc-sub">PDF 中文乱码</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-run"></span><span class="lc-mono">T-16</span><span class="lc-sub">批量导出</span></span>
+</span>
+</a>
+
+<a class="lc-main" href="MainTask.dc.html">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-run"></span>在跑</span><span class="lc-sub">2 小时前报过进展</span></span>
+<span class="lc-title">短信提醒多供应商</span>
+<span>T-17 正在接第二家供应商，沙箱已经接通。</span>
+<span class="lc-steps">
+<span class="lc-chip"><span class="lc-chip-who">你说</span>短信要有备用供应商</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">派出</span>T-17 接第二家供应商</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">Claude Code 报</span>第二家的沙箱已接通</span>
+</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-run"></span><span class="lc-mono">T-17</span><span class="lc-sub">接第二家供应商</span></span>
+</span>
+</a>
+
+<a class="lc-main" href="MainTask.dc.html">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-stop"></span>停着</span><span class="lc-sub">今天 09:05 退回</span></span>
+<span class="lc-title">列表页性能</span>
+<span>T-18 要查生产库，超出授权，已退回。要它继续，得开一个范围更大的新任务。</span>
+<span class="lc-steps">
+<span class="lc-chip"><span class="lc-chip-who">你说</span>列表页首屏太慢</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">派出</span>T-18 首屏慢的排查</span><span class="lc-sep">›</span>
+<span class="lc-chip"><span class="lc-chip-who">协调器记</span>要查生产库，超出授权，已退回</span>
+</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-stop"></span><span class="lc-mono">T-18</span><span class="lc-sub">首屏慢的排查</span></span>
+</span>
+</a>
+
+</div>
+<span class="lc-sub">每一行里的小格是这个主任务最要紧的几步，按时间从左到右，最后一格是现在停的地方。最下面一排是它里面的任务。点一行，看完整的经过。</span>
+</section>
+
+<aside class="lc-side" aria-label="等你处理">
+<div class="lc-head">
+<h2 class="lc-h">等你处理</h2>
+<span class="lc-sub">3 件。满 5 件，协调器先停止派新活。</span>
+</div>
+
+<form class="lc-ask">
+<div class="lc-row"><span class="lc-pill">等你拍板</span><span class="lc-sub">预约日历改版</span></div>
+<span class="lc-mono lc-bmeta">T-12 · Codex 问的 · 今天 10:12</span>
+<span class="lc-title">预约拖到另一天时，那个时段已经有人了，怎么办？</span>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ pick }}" /><span>自动顺延到下一个空时段</span></label>
+<label class="lc-opt on"><input type="radio" class="lc-radio" name="{{ pick }}" defaultChecked="{{ true }}" /><span class="lc-opt-text"><span class="lc-strong">拒绝，并提示冲突</span><span class="lc-sub">执行体建议这个：不会悄悄改掉客户约好的时间。</span></span></label>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ pick }}" /><span>允许重叠，并标出来</span></label>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">就这么定</button>
+<button type="button" class="lc-btn">先放着</button>
+<a class="lc-link" href="MainTask.dc.html">先看它是怎么走到这里的</a>
+</div>
+</form>
+
+<div class="lc-todo">
+<div class="lc-row"><span class="lc-pill">等你验收</span><span class="lc-sub">对账单导出</span></div>
+<span class="lc-mono lc-bmeta">T-15 · Claude Code 今天 08:55 报告做完</span>
+<span class="lc-title">PDF 中文乱码说修好了</span>
+<span>附了 3 条事实。有 1 句话没有对应的事实。</span>
+<div class="lc-row">
+<a class="lc-btn lc-btn-main lc-a" href="Review.dc.html">去验收</a>
+<button type="button" class="lc-btn">先放着</button>
+</div>
+</div>
+
+<div class="lc-todo">
+<div class="lc-row"><span class="lc-pill">等你合并</span><span class="lc-sub">对账单导出</span></div>
+<span class="lc-mono lc-bmeta">T-14 · 你昨天 18:20 验收通过</span>
+<span class="lc-title">导出按钮文案</span>
+<span>验收已经过了，只差合并。合并要你来点，执行体没有这个授权。</span>
+<span class="lc-facts"><span class="lc-fact">草稿 PR #42</span><span class="lc-fact">测试 18 过 · 0 败</span><span class="lc-fact">改动 2 个文件</span></span>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">合并</button>
+<button type="button" class="lc-btn">看改动</button>
+<button type="button" class="lc-btn">先放着</button>
+</div>
+</div>
+
+</aside>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"lc-light","options":["lc-light","lc-dark"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = (this.state && this.state.theme) || this.props.theme || 'lc-light';
+    return {
+      theme: theme,
+      pick: 'pick-' + theme,
+      segL: theme === 'lc-light' ? 'lc-seg-i on' : 'lc-seg-i',
+      segD: theme === 'lc-dark' ? 'lc-seg-i on' : 'lc-seg-i',
+      setLight: () => this.setState({ theme: 'lc-light' }),
+      setDark: () => this.setState({ theme: 'lc-dark' })
+    };
+  }
+}
+</script>
+</body>
+</html>

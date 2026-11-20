@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<link rel="stylesheet" href="./lc-app.css" />
+<style>
+body{margin:0}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+</style>
+</helmet>
+<div class="lc {{ theme }} lc-page" data-screen-label="任务详情">
+
+<header class="lc-bar">
+<a class="lc-brand" href="Overview.dc.html">Lane Coordinator</a>
+<span class="lc-tag">样例数据</span>
+<span class="lc-crumb"><a class="lc-link" href="Overview.dc.html">总览</a><span>›</span><a class="lc-link" href="MainTask.dc.html">预约日历改版</a><span>›</span><span class="lc-strong">T-12 跨天拖拽</span></span>
+<span class="lc-grow"></span>
+<span class="lc-gate"><span>等你的事 3 / 5</span><span class="lc-slots"><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot"></span><span class="lc-slot"></span></span></span>
+<span class="lc-seg"><button type="button" class="{{ segL }}" onClick="{{ setLight }}">浅色</button><button type="button" class="{{ segD }}" onClick="{{ setDark }}">暗色</button></span>
+<a class="lc-btn lc-btn-main lc-a" href="NewTask.dc.html">开新任务</a>
+</header>
+
+<main class="lc-body">
+
+<div class="lc-hero">
+<span class="lc-row"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你拍板</span><span class="lc-sub">等了 38 分钟</span></span>
+<div class="lc-title" role="heading" aria-level="1">T-12 跨天拖拽</div>
+<span class="lc-stmt">拖拽和落点计算已经做完。目标日的那个时段被占用时该怎么办，还没定。</span>
+<span class="lc-mono lc-bmeta">属于 预约日历改版 · 执行实例 2 / 2 · Codex 今天 09:40 接手</span>
+</div>
+
+<div class="lc-cols">
+
+<section class="lc-col" aria-label="这个任务的情况">
+
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">停下时的状态</h2><span class="lc-sub">Codex 今天 10:12 停下时写的</span></div>
+<div class="lc-kv">
+<span class="lc-k">目标</span><span>在周视图里把一条预约拖到另一天，时间段保持不变。</span>
+<span class="lc-k">停在哪</span><span class="lc-strong">拖拽和落点计算已经做完。目标日的那个时段被占用时该怎么办，还没定。</span>
+<span class="lc-k">卡在什么</span><span>等你定占用冲突的处理方式。</span>
+<span class="lc-k">回来第一步</span><span>你定完，补上冲突处理，再修 2 个失败的测试。</span>
+</div>
+</div>
+
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">程序记下的</h2><span class="lc-sub">记录，模型改不了</span></div>
+<div class="lc-kv">
+<span class="lc-k">改动</span><span class="lc-mono">6 个文件</span>
+<span class="lc-k">测试</span><span class="lc-mono">41 过 · 2 败</span>
+<span class="lc-k">分支</span><span class="lc-mono">feat/cross-day</span>
+<span class="lc-k">预算</span><span class="lc-mono">$3.20 / $10 <span class="lc-meter"><span class="lc-meter-fill" style="width: 32%"></span></span></span>
+<span class="lc-k">最后上报</span><span class="lc-mono">今天 10:12</span>
+</div>
+</div>
+
+<div class="lc-head"><h2 class="lc-h">这个任务的每一步</h2><span class="lc-sub">按时间排，最后一步就是现在停的地方</span></div>
+
+<div class="lc-trail lc-measure">
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 17:15</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-from"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who-row"><span class="lc-who">派出任务</span><a class="lc-orig" href="#">看派活单</a></span>
+<span class="lc-gist">做跨天拖拽，交给 Claude Code。</span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 17:40</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who-row"><span class="lc-who">Claude Code 报</span><a class="lc-orig" href="#">展开这 5 条</a></span>
+<span class="lc-gist">到 21:10 为止有 5 条普通进展，已收起。</span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 21:44</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who-row"><span class="lc-who">Claude Code 报</span><a class="lc-orig" href="#">看上报原文</a></span>
+<span class="lc-gist">里程碑：拖拽原型可用。</span>
+<span class="lc-facts"><span class="lc-fact">测试 12 过</span><span class="lc-fact">录屏 1 段</span></span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">今天 09:40</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who-row"><span class="lc-who">协调器记</span></span>
+<span class="lc-gist">换了执行实例。Claude Code 的会话到时限，09:31 退出；Codex 按“停下时的状态”接手。任务和授权范围没变。</span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">今天 10:12</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-next"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who-row"><span class="lc-who">Codex 问你</span><a class="lc-orig" href="#">看原话</a></span>
+<span class="lc-gist lc-strong">目标日的那个时段被占用时怎么办？</span>
+<span class="lc-row"><span class="lc-pill">现在停在这</span></span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">还没发生</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-next lc-rail-end"></span><span class="lc-node lc-node-next"></span></span>
+<div class="lc-step-body">
+<span class="lc-gist lc-sub">你定完，补上冲突处理，再修 2 个失败的测试。</span>
+</div>
+</div>
+
+</div>
+</section>
+
+<aside class="lc-side" aria-label="等你处理、执行实例和授权范围">
+
+<form class="lc-ask">
+<div class="lc-row"><span class="lc-pill">等你拍板</span><span class="lc-mono lc-bmeta">Codex 问的 · 今天 10:12</span></div>
+<span class="lc-title">预约拖到另一天时，那个时段已经有人了，怎么办？</span>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ pick }}" /><span>自动顺延到下一个空时段</span></label>
+<label class="lc-opt on"><input type="radio" class="lc-radio" name="{{ pick }}" defaultChecked="{{ true }}" /><span class="lc-opt-text"><span class="lc-strong">拒绝，并提示冲突</span><span class="lc-sub">执行体建议这个：不会悄悄改掉客户约好的时间。</span></span></label>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ pick }}" /><span>允许重叠，并标出来</span></label>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">就这么定</button>
+<button type="button" class="lc-btn">先放着</button>
+</div>
+</form>
+
+<div class="lc-stack">
+<div class="lc-head"><h2 class="lc-h">执行实例</h2><span class="lc-sub">任务没变，执行实例换过 1 次</span></div>
+<div class="lc-tasks">
+<div class="lc-task lc-task-first"><span class="lc-mono">1</span><span class="lc-task-name">Claude Code</span><span class="lc-mono lc-bmeta">昨天 17:15 到今天 09:31</span><span class="lc-sub">已退出</span></div>
+<div class="lc-task"><span class="lc-mono">2</span><span class="lc-task-name">Codex</span><span class="lc-mono lc-bmeta">今天 09:40 接手</span><span class="lc-strong">现在是它</span></div>
+</div>
+</div>
+
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">授权范围</h2><span class="lc-sub">你昨天 17:15 给的</span></div>
+<div class="lc-kv">
+<span class="lc-k">仓库和目录</span><span class="lc-mono">web-app / calendar</span>
+<span class="lc-k">分支</span><span class="lc-mono">feat/cross-day</span>
+<span class="lc-k">凭据</span><span>不给</span>
+<span class="lc-k">预算上限</span><span class="lc-mono">$10</span>
+<span class="lc-k">可以做</span><span>推分支，开草稿 PR</span>
+<span class="lc-k">不可以做</span><span>合并</span>
+</div>
+<span class="lc-sub">授权范围只有你能给，任务里的消息改不了它。要更大的范围，就开一个新任务。</span>
+</div>
+
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-quiet">打断这个任务</button>
+</div>
+
+</aside>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"lc-light","options":["lc-light","lc-dark"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = (this.state && this.state.theme) || this.props.theme || 'lc-light';
+    return {
+      theme: theme,
+      pick: 'pick-task-' + theme,
+      segL: theme === 'lc-light' ? 'lc-seg-i on' : 'lc-seg-i',
+      segD: theme === 'lc-dark' ? 'lc-seg-i on' : 'lc-seg-i',
+      setLight: () => this.setState({ theme: 'lc-light' }),
+      setDark: () => this.setState({ theme: 'lc-dark' })
+    };
+  }
+}
+</script>
+</body>
+</html>

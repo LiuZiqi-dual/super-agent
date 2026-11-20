@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<style>
+body{margin:0}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+.dl-page{min-height:100vh;box-sizing:border-box;padding:40px 32px 64px}
+.dl-wrap{max-width:1520px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+.dl-head{display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:860px}
+.dl-h1{margin:0;font-size:30px;line-height:1.25;font-weight:700}
+.dl-lead{margin:0;font-size:16px;line-height:1.6}
+.dl-sec{display:flex;flex-direction:column;gap:12px}
+.dl-sec-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.dl-h2{margin:0;font-size:17px;font-weight:700}
+.dl-tag{font-size:12px;font-weight:700;padding:0 8px;border:1px solid var(--line);border-radius:4px;color:var(--sub)}
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:12px}
+.dl-card{display:flex;flex-direction:column;gap:6px;padding:16px 18px 18px}
+.dl-space{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 28px;padding:16px 18px}
+.dl-bar-i{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.dl-bar{height:18px;background:var(--ink)}
+.dl-space-note{flex:1 1 320px;min-width:0}
+.dl-themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(640px,100%),1fr));gap:24px;align-items:start}
+.dl-theme{display:flex;flex-direction:column;gap:30px;min-width:0;box-sizing:border-box;padding:24px 24px 30px;border:1px solid var(--line);border-radius:6px}
+.dl-theme-name{font-size:22px;font-weight:700}
+.dl-blk{display:flex;flex-direction:column;gap:12px;min-width:0}
+.dl-h3{margin:0;padding-bottom:6px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;color:var(--sub)}
+.dl-sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:14px 10px}
+.dl-sw{display:flex;flex-direction:column;gap:1px}
+.dl-chip{height:40px;margin-bottom:4px;border:1px solid var(--line);border-radius:4px}
+.dl-c-bg{background:var(--bg)}
+.dl-c-panel{background:var(--panel)}
+.dl-c-band{background:var(--band)}
+.dl-c-sel{background:var(--sel)}
+.dl-c-line{background:var(--line)}
+.dl-c-ink{background:var(--ink)}
+.dl-c-sub{background:var(--sub)}
+.dl-c-ask{background:var(--ask)}
+.dl-c-askbg{background:var(--ask-bg)}
+.dl-c-run{background:var(--run)}
+.dl-c-done{background:var(--done)}
+.dl-c-wait{background:var(--wait)}
+.dl-c-stop{background:var(--stop)}
+.dl-spec{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px 16px;align-items:baseline}
+.dl-marks{display:grid;grid-template-columns:116px minmax(0,1fr);gap:10px 16px;align-items:baseline}
+.dl-stack{display:flex;flex-direction:column;gap:10px}
+</style>
+</helmet>
+<div class="lc lc-light dl-page" data-screen-label="设计语言">
+<div class="dl-wrap">
+
+<header class="dl-head">
+<span class="dl-tag">v0.1 · 样例数据</span>
+<h1 class="dl-h1">Lane Coordinator 设计语言</h1>
+<p class="dl-lead">从方向 C 定下来的一套规则。浅色和暗色用同一套标记，只换一组颜色变量。下面所有任务和对话都是编造的样例。</p>
+</header>
+
+<section class="dl-sec">
+<div class="dl-sec-head">
+<h2 class="dl-h2">三层结构</h2>
+<span class="dl-tag">待确认</span>
+</div>
+<div class="dl-grid">
+<div class="lc-panel dl-card">
+<span class="lc-title">主任务</span>
+<span>你在推进的一个方向，对应一条从头到尾的长对话。总览里一行一个。</span>
+<span class="lc-sub">例：预约日历改版</span>
+</div>
+<div class="lc-panel dl-card">
+<span class="lc-title">任务</span>
+<span>主任务里派出去并行跑的一件活，交给一个执行体。点开主任务才看到。</span>
+<span class="lc-sub">例：T-12 跨天拖拽</span>
+</div>
+<div class="lc-panel dl-card">
+<span class="lc-title">步</span>
+<span>对话里的一步：你说了什么，它报了什么，它问了什么，你定了什么。经过图由步连成。</span>
+<span class="lc-sub">例：昨天 17:12，你定的：换拖拽库</span>
+</div>
+</div>
+</section>
+
+<section class="dl-sec">
+<h2 class="dl-h2">四条规则</h2>
+<div class="dl-grid">
+<div class="lc-panel dl-card">
+<span class="lc-strong">先回答停在哪</span>
+<span>每一屏最大的字，说的是这件事现在停在哪。</span>
+</div>
+<div class="lc-panel dl-card">
+<span class="lc-strong">话和记录分开</span>
+<span>人和模型说的话用正文字体。程序记下的时间、编号、测试结果用等宽字。</span>
+</div>
+<div class="lc-panel dl-card">
+<span class="lc-strong">状态不只靠颜色</span>
+<span>每种状态有自己的形状、颜色和一个词，三样一起出现。</span>
+</div>
+<div class="lc-panel dl-card">
+<span class="lc-strong">只有“等你”是暖色</span>
+<span>别的状态都安静。暖色出现的地方，就是要你动手的地方。</span>
+</div>
+</div>
+</section>
+
+<section class="dl-sec">
+<h2 class="dl-h2">间距、圆角、线</h2>
+<div class="lc-panel dl-space">
+<div class="dl-bar-i"><span class="dl-bar" style="width: 4px"></span><span class="lc-mono">4</span></div>
+<div class="dl-bar-i"><span class="dl-bar" style="width: 8px"></span><span class="lc-mono">8</span></div>
+<div class="dl-bar-i"><span class="dl-bar" style="width: 12px"></span><span class="lc-mono">12</span></div>
+<div class="dl-bar-i"><span class="dl-bar" style="width: 16px"></span><span class="lc-mono">16</span></div>
+<div class="dl-bar-i"><span class="dl-bar" style="width: 20px"></span><span class="lc-mono">20</span></div>
+<div class="dl-bar-i"><span class="dl-bar" style="width: 28px"></span><span class="lc-mono">28</span></div>
+<span class="dl-space-note">间距只用这六档。圆角一律 4px。线 1px，带状态的边 1.5 到 2px。选中用 2px 外框，不用阴影。可点的东西不小于 44px。</span>
+</div>
+</section>
+
+<div class="dl-themes">
+<sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+<section class="lc {{ t.cls }} dl-theme">
+<span class="dl-theme-name">{{ t.name }}</span>
+
+<div class="dl-blk">
+<h3 class="dl-h3">颜色</h3>
+<div class="dl-sws">
+<div class="dl-sw"><span class="dl-chip dl-c-bg"></span><span class="lc-strong">底色</span><span class="lc-mono">--bg {{ t.hex.bg }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-panel"></span><span class="lc-strong">面板</span><span class="lc-mono">--panel {{ t.hex.panel }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-band"></span><span class="lc-strong">泳道带</span><span class="lc-mono">--band {{ t.hex.band }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-sel"></span><span class="lc-strong">选中</span><span class="lc-mono">--sel {{ t.hex.sel }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-line"></span><span class="lc-strong">线</span><span class="lc-mono">--line {{ t.hex.line }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-ink"></span><span class="lc-strong">正文</span><span class="lc-mono">--ink {{ t.hex.ink }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-sub"></span><span class="lc-strong">次要文字</span><span class="lc-mono">--sub {{ t.hex.sub }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-ask"></span><span class="lc-strong">等你</span><span class="lc-mono">--ask {{ t.hex.ask }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-askbg"></span><span class="lc-strong">等你的底</span><span class="lc-mono">--ask-bg {{ t.hex.askbg }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-run"></span><span class="lc-strong">在跑</span><span class="lc-mono">--run {{ t.hex.run }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-done"></span><span class="lc-strong">做完</span><span class="lc-mono">--done {{ t.hex.done }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-wait"></span><span class="lc-strong">等别的任务</span><span class="lc-mono">--wait {{ t.hex.wait }}</span></div>
+<div class="dl-sw"><span class="dl-chip dl-c-stop"></span><span class="lc-strong">停着</span><span class="lc-mono">--stop {{ t.hex.stop }}</span></div>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">字</h3>
+<div class="dl-spec">
+<span class="lc-sub">陈述</span><span class="lc-stmt">停在时段冲突，等你拍板。</span>
+<span class="lc-sub">标题</span><span class="lc-title">预约日历改版</span>
+<span class="lc-sub">步的摘要</span><span class="lc-gist">换拖拽库。先做周视图，月视图以后再说。</span>
+<span class="lc-sub">正文</span><span>拖拽和落点计算已经做完，还有 2 个测试没过。</span>
+<span class="lc-sub">次要</span><span class="lc-sub">等了 38 分钟</span>
+<span class="lc-sub">记录</span><span class="lc-mono">T-12 · 今天 10:12 · feat/cross-day · 测试 41 过 2 败</span>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">状态记号</h3>
+<div class="dl-marks">
+<span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你</span><span>要你拍板、验收或合并。</span>
+<span class="lc-st"><span class="lc-mk lc-mk-run"></span>在跑</span><span>执行体在干活，现在不用你管。</span>
+<span class="lc-st"><span class="lc-mk lc-mk-wait"></span>等别的任务</span><span>被另一个任务挡着，那边动了它才动。</span>
+<span class="lc-st"><span class="lc-mk lc-mk-stop"></span>停着</span><span>出了事被退回，或者被你打断了。</span>
+<span class="lc-st"><span class="lc-mk lc-mk-done"></span>做完</span><span>已经发生过的步，或者验收通过的任务。</span>
+<span class="lc-st"><span class="lc-mk lc-mk-next"></span>还没发生</span><span>后面要走的步，先占个位置。</span>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">小零件</h3>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">就这么定</button>
+<button type="button" class="lc-btn">先放着</button>
+<button type="button" class="lc-btn lc-btn-quiet">打断</button>
+<input type="text" class="lc-input" aria-label="对这个主任务说话" placeholder="对这个主任务说话" />
+</div>
+<div class="lc-row">
+<span class="lc-pill">等你拍板</span>
+<span class="lc-fact">测试 41 过 · 2 败</span>
+<span class="lc-fact">改动 6 个文件</span>
+<span class="lc-fact">预算 $3.20 / $10</span>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">合成示例：总览，一行一个主任务</h3>
+<div class="lc-cells">
+<div class="lc-cell"><span class="lc-sub">现在在哪</span><span class="lc-stmt">4 个主任务：2 个等你，1 个在跑，1 个停着。</span></div>
+<div class="lc-cell"><span class="lc-sub">下一步</span><span class="lc-stmt">先看预约日历改版，有任务在等它的决定。</span></div>
+<div class="lc-cell lc-cell-ask"><span class="lc-st lc-sub"><span class="lc-mk lc-mk-ask"></span>需要我做什么</span><span class="lc-stmt">拍板 1 件，验收 1 件。</span></div>
+</div>
+<div class="dl-stack">
+<a class="lc-main on" href="#">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你拍板</span><span class="lc-sub">等了 38 分钟</span></span>
+<span class="lc-title">预约日历改版</span>
+<span>T-12 在问：目标日的时段被占用时怎么办？</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-done"></span><span class="lc-mono">T-10</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span><span class="lc-mono">T-12</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-wait"></span><span class="lc-mono">T-13</span></span>
+</span>
+</a>
+<a class="lc-main" href="#">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你验收</span><span class="lc-sub">等了 1 小时 55 分</span></span>
+<span class="lc-title">对账单导出</span>
+<span>T-15 说 PDF 中文乱码修好了，有 1 句话没有证据。</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-ask"></span><span class="lc-mono">T-15</span></span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-run"></span><span class="lc-mono">T-16</span></span>
+</span>
+</a>
+<a class="lc-main" href="#">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-run"></span>在跑</span><span class="lc-sub">2 小时前报过进展</span></span>
+<span class="lc-title">短信提醒多供应商</span>
+<span>T-17 正在接第二家供应商。</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-run"></span><span class="lc-mono">T-17</span></span>
+</span>
+</a>
+<a class="lc-main" href="#">
+<span class="lc-main-top"><span class="lc-st"><span class="lc-mk lc-mk-stop"></span>停着</span><span class="lc-sub">今天 09:05 退回</span></span>
+<span class="lc-title">列表页性能</span>
+<span>T-18 要查生产库，超出授权，已退回。</span>
+<span class="lc-roll">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-stop"></span><span class="lc-mono">T-18</span></span>
+</span>
+</a>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">合成示例：点开一个主任务，看它是怎么走到这里的</h3>
+<div class="dl-stack">
+<span class="lc-title">预约日历改版</span>
+<span class="lc-stmt">T-12 在问时段被占用时怎么办，等你拍板。T-13 在等这个决定。</span>
+</div>
+
+<div class="lc-trail">
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 15:40</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-from"></span><span class="lc-node lc-node-you"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">你说</span>
+<span class="lc-gist">预约日历要改版，先支持把预约拖到另一天。</span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 15:46</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">派出任务</span>
+<span class="lc-gist">先摸清现有的日历组件。</span>
+<div class="lc-branch">
+<div class="lc-branch-head"><span class="lc-mono">T-10</span><span class="lc-strong">摸清现有日历组件</span><span class="lc-sub">Claude Code</span></div>
+<div class="lc-bstep">
+<span class="lc-bmk"><span class="lc-mk lc-mk-done"></span></span>
+<div class="lc-bbody"><span class="lc-mono lc-bmeta">昨天 17:05 · 做完，一共 3 步</span><a class="lc-link" href="#">展开这 3 步</a></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 17:05</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">任务回来</span>
+<span class="lc-gist">T-10 的结论：现有组件不支持跨列拖放，建议换拖拽库。</span>
+<span class="lc-facts"><span class="lc-fact">读了 14 个文件</span><span class="lc-fact">没有改动</span></span>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 17:12</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-you"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">你定的</span>
+<span class="lc-gist lc-strong">换拖拽库。先做周视图，月视图以后再说。</span>
+<div class="lc-quote"><span class="lc-who">原话</span><span>那就换吧，别在旧组件上硬改。先把周视图做出来，月视图以后再说。</span></div>
+<a class="lc-link lc-sub" href="#">收起原话</a>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">昨天 17:15</span>
+<span class="lc-rail"><span class="lc-rail-line"></span><span class="lc-node lc-node-sys"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">派出任务</span>
+<span class="lc-gist">做跨天拖拽。</span>
+<div class="lc-branch">
+<div class="lc-branch-head"><span class="lc-mono">T-12</span><span class="lc-strong">跨天拖拽</span><span class="lc-sub">Codex，换过 1 次执行实例</span></div>
+<div class="lc-bstep">
+<span class="lc-bmk"><span class="lc-mk lc-mk-done"></span></span>
+<div class="lc-bbody"><span class="lc-mono lc-bmeta">昨天 21:44 · Claude Code 报</span><span>里程碑：拖拽原型可用。</span><span class="lc-facts"><span class="lc-fact">测试 12 过</span><span class="lc-fact">录屏 1 段</span></span></div>
+</div>
+<div class="lc-bstep">
+<span class="lc-bmk"><span class="lc-mk lc-mk-done"></span></span>
+<div class="lc-bbody"><span class="lc-mono lc-bmeta">今天 09:40 · 协调器记</span><span>换了执行实例：Claude Code 退出，Codex 接手。</span></div>
+</div>
+<div class="lc-bstep now">
+<span class="lc-bmk"><span class="lc-mk lc-mk-ask"></span></span>
+<div class="lc-bbody"><span class="lc-mono lc-bmeta">今天 10:12 · Codex 问你</span><span class="lc-strong">目标日的那个时段被占用时怎么办？</span><span class="lc-pill">现在停在这</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">今天 09:15</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-next"></span><span class="lc-node lc-node-you"></span></span>
+<div class="lc-step-body">
+<span class="lc-who">你说</span>
+<span class="lc-gist">撞上别人的预约时，提示文案也要重写。</span>
+<div class="lc-branch">
+<div class="lc-branch-head"><span class="lc-mono">T-13</span><span class="lc-strong">冲突提示文案</span><span class="lc-sub">Claude Code</span></div>
+<div class="lc-bstep">
+<span class="lc-bmk"><span class="lc-mk lc-mk-wait"></span></span>
+<div class="lc-bbody"><span class="lc-mono lc-bmeta">今天 09:20 · 等别的任务</span><span>要等 T-12 定下冲突怎么处理。</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="lc-step">
+<span class="lc-step-time lc-mono">还没发生</span>
+<span class="lc-rail"><span class="lc-rail-line lc-rail-next lc-rail-end"></span><span class="lc-node lc-node-next"></span></span>
+<div class="lc-step-body">
+<span class="lc-gist lc-sub">两个任务都回来后，开一个草稿 PR。</span>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">合成示例：主任务里面的任务</h3>
+<div class="lc-tasks">
+<a class="lc-task lc-task-first" href="#"><span class="lc-mono">T-10</span><span class="lc-task-name">摸清现有日历组件</span><span class="lc-sub">Claude Code</span><span class="lc-st"><span class="lc-mk lc-mk-done"></span>做完</span></a>
+<a class="lc-task" href="#"><span class="lc-mono">T-12</span><span class="lc-task-name">跨天拖拽</span><span class="lc-sub">Codex</span><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你拍板</span></a>
+<a class="lc-task" href="#"><span class="lc-mono">T-13</span><span class="lc-task-name">冲突提示文案</span><span class="lc-sub">Claude Code</span><span class="lc-st"><span class="lc-mk lc-mk-wait"></span>等 T-12</span></a>
+</div>
+</div>
+
+<div class="dl-blk">
+<h3 class="dl-h3">合成示例：拍板卡</h3>
+<form class="lc-ask">
+<div class="lc-row"><span class="lc-pill">等你拍板</span><span class="lc-mono lc-bmeta">T-12 · Codex 问的 · 今天 10:12</span></div>
+<span class="lc-title">预约拖到另一天时，那个时段已经有人了，怎么办？</span>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ t.pick }}" /><span>自动顺延到下一个空时段</span></label>
+<label class="lc-opt on"><input type="radio" class="lc-radio" name="{{ t.pick }}" checked /><span class="lc-opt-text"><span class="lc-strong">拒绝，并提示冲突</span><span class="lc-sub">执行体建议这个：不会悄悄改掉客户约好的时间。</span></span></label>
+<label class="lc-opt"><input type="radio" class="lc-radio" name="{{ t.pick }}" /><span>允许重叠，并标出来</span></label>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">就这么定</button>
+<button type="button" class="lc-btn">先放着</button>
+</div>
+</form>
+</div>
+
+</section>
+</sc-for>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      themes: [
+        {
+          cls: 'lc-light',
+          name: '浅色',
+          pick: 'pick-light',
+          hex: { bg: '#F6F5F2', panel: '#FFFFFF', band: '#EFEDE8', sel: '#E6E3DB', line: '#C9C5BC', ink: '#1D2127', sub: '#5D6670', ask: '#C0392B', askbg: '#FAE8E5', run: '#2B6CB0', done: '#2E7D4A', wait: '#8A6A00', stop: '#667079' }
+        },
+        {
+          cls: 'lc-dark',
+          name: '暗色',
+          pick: 'pick-dark',
+          hex: { bg: '#14171B', panel: '#1D2228', band: '#191D22', sel: '#2B323A', line: '#3A424B', ink: '#E6E8EB', sub: '#9AA3AD', ask: '#E8685A', askbg: '#3A2422', run: '#5B9BE0', done: '#4CB06C', wait: '#D9AE2B', stop: '#8E96A0' }
+        }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

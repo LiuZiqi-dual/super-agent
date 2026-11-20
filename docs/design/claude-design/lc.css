@@ -1,0 +1,93 @@
+/* Lane Coordinator 设计语言 v0.1（2026-11-12）
+   用法：外层加 .lc 和一个主题类（.lc-light 或 .lc-dark）。
+   两种模式用同一套标记，只换下面两组变量。 */
+
+/* ---------- 颜色 ---------- */
+.lc-light{color-scheme:light;--bg:#F6F5F2;--panel:#FFFFFF;--band:#EFEDE8;--sel:#E6E3DB;--line:#C9C5BC;--line-soft:#DEDBD3;--ink:#1D2127;--sub:#5D6670;--ask:#C0392B;--ask-bg:#FAE8E5;--on-ask:#FFFFFF;--run:#2B6CB0;--done:#2E7D4A;--wait:#8A6A00;--stop:#667079;--btn:#1D2127;--on-btn:#FFFFFF}
+.lc-dark{color-scheme:dark;--bg:#14171B;--panel:#1D2228;--band:#191D22;--sel:#2B323A;--line:#3A424B;--line-soft:#2B323A;--ink:#E6E8EB;--sub:#9AA3AD;--ask:#E8685A;--ask-bg:#3A2422;--on-ask:#14171B;--run:#5B9BE0;--done:#4CB06C;--wait:#D9AE2B;--stop:#8E96A0;--btn:#E6E8EB;--on-btn:#14171B}
+
+/* ---------- 字 ---------- */
+.lc{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif;font-size:14px;line-height:1.55;font-variant-numeric:tabular-nums}
+.lc-stmt{font-size:22px;line-height:1.35;font-weight:600;text-wrap:pretty}
+.lc-title{font-size:17px;line-height:1.4;font-weight:700}
+.lc-gist{font-size:15px;line-height:1.5}
+.lc-strong{font-weight:600}
+.lc-sub{font-size:13px;color:var(--sub)}
+.lc-mono{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;font-size:12px}
+.lc-link{color:var(--ink);font-weight:600;text-decoration:underline;cursor:pointer}
+
+/* ---------- 面 ---------- */
+.lc-panel{background:var(--panel);border:1px solid var(--line);border-radius:4px}
+
+/* ---------- 状态记号：形状 + 颜色 + 字 ---------- */
+.lc-st{display:inline-flex;align-items:center;gap:7px;font-weight:600}
+.lc-mk{flex:none;display:inline-block;box-sizing:border-box;width:10px;height:10px}
+.lc-mk-ask{border-radius:50%;background:var(--ask)}
+.lc-mk-run{border-radius:50%;border:2.5px solid var(--run)}
+.lc-mk-wait{width:9px;height:9px;background:var(--wait);transform:rotate(45deg)}
+.lc-mk-stop{width:9px;height:9px;background:var(--stop)}
+.lc-mk-done{width:6px;height:11px;border-right:2px solid var(--done);border-bottom:2px solid var(--done);transform:rotate(45deg);margin:-3px 2px 0}
+.lc-mk-next{border-radius:50%;border:1.5px dashed var(--sub)}
+.lc-pill{display:inline-flex;align-items:center;padding:1px 10px;border-radius:4px;background:var(--ask);color:var(--on-ask);font-size:13px;font-weight:700}
+
+/* ---------- 小零件 ---------- */
+.lc-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;padding:0 16px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);font:inherit;cursor:pointer}
+.lc-btn-main{background:var(--btn);border-color:var(--btn);color:var(--on-btn);font-weight:700}
+.lc-btn-quiet{border-color:transparent;background:transparent;text-decoration:underline}
+.lc-input{min-height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--stop);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit}
+.lc-facts{display:flex;flex-wrap:wrap;gap:6px}
+.lc-fact{font-family:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;font-size:12px;padding:2px 8px;border:1px solid var(--line-soft);border-radius:4px;background:var(--band)}
+.lc-quote{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border:1px solid var(--line-soft);border-radius:4px;background:var(--band);font-size:13px}
+
+/* ---------- 总览三格 ---------- */
+.lc-cells{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px}
+.lc-cell{display:flex;flex-direction:column;gap:4px;padding:14px 18px 16px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.lc-cell-ask{padding:13px 17px 15px;border:2px solid var(--ask)}
+
+/* ---------- 主任务行 ---------- */
+.lc-main{display:flex;flex-direction:column;gap:4px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--ink);text-decoration:none}
+.lc-main.on{background:var(--sel);outline:2px solid var(--ink);outline-offset:2px}
+.lc-main-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px}
+.lc-roll{display:flex;flex-wrap:wrap;gap:6px 14px;padding-top:6px}
+.lc-roll-i{display:inline-flex;align-items:center;gap:6px}
+
+/* ---------- 任务行 ---------- */
+.lc-tasks{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.lc-task{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;min-height:44px;box-sizing:border-box;padding:8px 14px;border-top:1px solid var(--line-soft);color:var(--ink);text-decoration:none}
+.lc-task-first{border-top:0}
+.lc-task-name{flex:1 1 160px;min-width:0;font-weight:600}
+
+/* ---------- 经过：一步 ---------- */
+.lc-trail{display:flex;flex-direction:column}
+.lc-step{display:grid;grid-template-columns:76px 16px minmax(0,1fr);column-gap:12px}
+.lc-step-time{padding-top:3px;text-align:right;color:var(--sub)}
+.lc-rail{position:relative;display:flex;justify-content:center}
+.lc-rail-line{position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:var(--line)}
+.lc-rail-from{top:10px}
+.lc-rail-next{width:0;margin-left:-1px;background:none;border-left:2px dashed var(--line)}
+.lc-rail-end{bottom:auto;height:10px}
+.lc-node{position:relative;flex:none;box-sizing:border-box;width:12px;height:12px;margin-top:5px;border-radius:50%;box-shadow:0 0 0 3px var(--bg)}
+.lc-node-you{background:var(--ink)}
+.lc-node-sys{background:var(--bg);border:2.5px solid var(--ink)}
+.lc-node-next{background:var(--bg);border:1.5px dashed var(--sub)}
+.lc-step-body{display:flex;flex-direction:column;gap:5px;min-width:0;padding-bottom:20px}
+.lc-who{font-size:12px;font-weight:700;color:var(--sub)}
+
+/* ---------- 经过：派出去的任务 ---------- */
+.lc-branch{display:flex;flex-direction:column;margin-top:3px;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.lc-branch-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:8px 12px}
+.lc-bstep{display:grid;grid-template-columns:14px minmax(0,1fr);column-gap:10px;padding:8px 12px;border-top:1px solid var(--line-soft)}
+.lc-bstep.now{background:var(--ask-bg)}
+.lc-bmk{display:flex;justify-content:center;padding-top:6px}
+.lc-bbody{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.lc-bmeta{color:var(--sub)}
+
+/* ---------- 拍板卡 ---------- */
+.lc-ask{display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;background:var(--panel);border:2px solid var(--ask);border-radius:4px}
+.lc-opt{display:flex;align-items:center;gap:10px;min-height:44px;box-sizing:border-box;padding:6px 12px;border:1px solid var(--line);border-radius:4px;cursor:pointer}
+.lc-opt.on{padding:8px 12px;border:1.5px solid var(--ink);background:var(--sel)}
+.lc-opt-text{display:flex;flex-direction:column}
+.lc-radio{-webkit-appearance:none;appearance:none;flex:none;box-sizing:border-box;width:16px;height:16px;margin:0;border:1.5px solid var(--sub);border-radius:50%;background:var(--panel)}
+.lc-radio:checked{border:5px solid var(--ink)}
+.on .lc-radio{border:5px solid var(--ink)}
+.lc-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}

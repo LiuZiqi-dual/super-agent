@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<link rel="stylesheet" href="./lc-app.css" />
+<style>
+body{margin:0;background:#E9E7E1;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+.sc-top{padding:48px 48px 8px}
+.sc-h1{margin:0 0 8px;font-size:40px;line-height:1.25;font-weight:700;color:#1D2127}
+.sc-sec{padding:40px 48px 44px;border-bottom:1px solid rgba(0,0,0,0.12)}
+.sc-title{margin:0 0 6px;font-size:30px;line-height:1.3;font-weight:700;color:#1D2127}
+.sc-note{margin:0 0 22px;max-width:1100px;font-size:17px;line-height:1.6;color:#4A525B}
+.sc-pair{display:flex;align-items:flex-start;gap:36px}
+.sc-frame{flex:none;width:1440px;display:flex;flex-direction:column;gap:10px}
+.sc-label{font-size:15px;font-weight:600;color:#4A525B}
+.sc-card{border:1px solid rgba(0,0,0,0.18);border-radius:6px;overflow:hidden;background:#FFFFFF}
+</style>
+</helmet>
+
+<section class="sc-top">
+<h1 class="sc-h1">Lane Coordinator 整套设计稿</h1>
+<p class="sc-note">五屏，每屏左边浅色、右边暗色，用的是同一个文件。任务和对话都是编造的样例。规则见 <a href="Design Language.dc.html">设计语言</a>。</p>
+</section>
+
+<section class="sc-sec" id="overview" data-screen-label="总览">
+<h2 class="sc-title">总览</h2>
+<p class="sc-note">一行一个主任务，每行带着它最要紧的几步。右边是等你处理的事：拍板、验收、合并。</p>
+<div class="sc-pair">
+<div class="sc-frame"><span class="sc-label">浅色</span><div class="sc-card"><dc-import name="Overview" theme="lc-light" hint-size="1440px,1150px"></dc-import></div></div>
+<div class="sc-frame"><span class="sc-label">暗色</span><div class="sc-card"><dc-import name="Overview" theme="lc-dark" hint-size="1440px,1150px"></dc-import></div></div>
+</div>
+</section>
+
+<section class="sc-sec" id="main-task" data-screen-label="主任务详情">
+<h2 class="sc-title">主任务详情</h2>
+<p class="sc-note">点开一个主任务，左边是这条对话从头到现在的每一步，派出去的任务嵌在派出的那一步下面。每一步都能看原话。右边是要你定的事和里面的任务。</p>
+<div class="sc-pair">
+<div class="sc-frame"><span class="sc-label">浅色</span><div class="sc-card"><dc-import name="MainTask" theme="lc-light" hint-size="1440px,1500px"></dc-import></div></div>
+<div class="sc-frame"><span class="sc-label">暗色</span><div class="sc-card"><dc-import name="MainTask" theme="lc-dark" hint-size="1440px,1500px"></dc-import></div></div>
+</div>
+</section>
+
+<section class="sc-sec" id="task-detail" data-screen-label="任务详情">
+<h2 class="sc-title">任务详情</h2>
+<p class="sc-note">一个任务自己的一页：停下时的状态、程序记下的事实、换过几次执行实例、授权范围。</p>
+<div class="sc-pair">
+<div class="sc-frame"><span class="sc-label">浅色</span><div class="sc-card"><dc-import name="TaskDetail" theme="lc-light" hint-size="1440px,1250px"></dc-import></div></div>
+<div class="sc-frame"><span class="sc-label">暗色</span><div class="sc-card"><dc-import name="TaskDetail" theme="lc-dark" hint-size="1440px,1250px"></dc-import></div></div>
+</div>
+</section>
+
+<section class="sc-sec" id="review" data-screen-label="验收">
+<h2 class="sc-title">验收</h2>
+<p class="sc-note">执行体说的话和程序记下的事实并排。没有事实对应的那句话用虚线框标出来。</p>
+<div class="sc-pair">
+<div class="sc-frame"><span class="sc-label">浅色</span><div class="sc-card"><dc-import name="Review" theme="lc-light" hint-size="1440px,950px"></dc-import></div></div>
+<div class="sc-frame"><span class="sc-label">暗色</span><div class="sc-card"><dc-import name="Review" theme="lc-dark" hint-size="1440px,950px"></dc-import></div></div>
+</div>
+</section>
+
+<section class="sc-sec" id="new-task" data-screen-label="开新任务">
+<h2 class="sc-title">开新任务</h2>
+<p class="sc-note">选它属于哪个主任务，或者新开一个。授权范围在这里给。</p>
+<div class="sc-pair">
+<div class="sc-frame"><span class="sc-label">浅色</span><div class="sc-card"><dc-import name="NewTask" theme="lc-light" hint-size="1440px,1250px"></dc-import></div></div>
+<div class="sc-frame"><span class="sc-label">暗色</span><div class="sc-card"><dc-import name="NewTask" theme="lc-dark" hint-size="1440px,1250px"></dc-import></div></div>
+</div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

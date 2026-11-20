@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" />
+<link rel="stylesheet" href="./lc.css" />
+<link rel="stylesheet" href="./lc-app.css" />
+<style>
+body{margin:0}
+a{color:#1D2127}
+a:hover{color:#2B6CB0}
+</style>
+</helmet>
+<div class="lc {{ theme }} lc-page" data-screen-label="验收">
+
+<header class="lc-bar">
+<a class="lc-brand" href="Overview.dc.html">Lane Coordinator</a>
+<span class="lc-tag">样例数据</span>
+<span class="lc-crumb"><a class="lc-link" href="Overview.dc.html">总览</a><span>›</span><a class="lc-link" href="MainTask.dc.html">对账单导出</a><span>›</span><span class="lc-strong">验收 T-15</span></span>
+<span class="lc-grow"></span>
+<span class="lc-gate"><span>等你的事 3 / 5</span><span class="lc-slots"><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot on"></span><span class="lc-slot"></span><span class="lc-slot"></span></span></span>
+<span class="lc-seg"><button type="button" class="{{ segL }}" onClick="{{ setLight }}">浅色</button><button type="button" class="{{ segD }}" onClick="{{ setDark }}">暗色</button></span>
+<a class="lc-btn lc-btn-main lc-a" href="NewTask.dc.html">开新任务</a>
+</header>
+
+<main class="lc-body">
+
+<div class="lc-hero">
+<span class="lc-row"><span class="lc-st"><span class="lc-mk lc-mk-ask"></span>等你验收</span><span class="lc-sub">等了 1 小时 55 分</span></span>
+<div class="lc-title" role="heading" aria-level="1">T-15 PDF 中文乱码</div>
+<span class="lc-stmt">执行体说修好了。附了 3 条事实，有 1 句话没有对应的事实。</span>
+<div class="lc-flow">
+<span class="lc-roll-i"><span class="lc-mk lc-mk-done"></span>执行体报告做完<span class="lc-mono">今天 08:55</span></span><span class="lc-sep">›</span>
+<span class="lc-roll-i lc-strong"><span class="lc-mk lc-mk-ask"></span>等你验收</span><span class="lc-sep">›</span>
+<span class="lc-roll-i"><span class="lc-mk lc-mk-next"></span>验收通过，任务才算结束</span>
+</div>
+</div>
+
+<div class="lc-cols">
+
+<section class="lc-col" aria-label="执行体说的">
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">执行体说的</h2><span class="lc-sub">话，模型写的</span></div>
+<span>乱码的原因是导出服务没有内嵌中文字体。机器上缺字体时，文字回退成了方框。 <span class="lc-ref">f-1</span></span>
+<span>已把字体子集内嵌进导出模板，并加了一条含中文的导出测试。 <span class="lc-ref">f-2</span> <span class="lc-ref">f-3</span></span>
+<div class="lc-flag">
+<span>所有导出场景都已正常。</span>
+<span class="lc-strong">这句话没有对应的事实。程序只找到对账单这一个场景的测试。</span>
+</div>
+</div>
+
+<form class="lc-todo">
+<div class="lc-row"><span class="lc-pill">等你验收</span><span class="lc-sub">通过，或者退回并说清要补什么</span></div>
+<span class="lc-label">退回的话，要补什么</span>
+<textarea class="lc-area" aria-label="退回的话，要补什么" defaultValue="发票导出和批量导出也各补一条中文用例。"></textarea>
+<div class="lc-row">
+<button type="button" class="lc-btn lc-btn-main">通过验收</button>
+<button type="button" class="lc-btn">退回，带上这段话</button>
+<button type="button" class="lc-btn">先放着</button>
+</div>
+<span class="lc-sub">执行体自己说做完不算结束。你的验收结果会记成这个主任务经过里的一步。通过以后如果还要合并，会再出现一张合并卡。</span>
+</form>
+</section>
+
+<section class="lc-col" aria-label="程序记下的">
+<div class="lc-box">
+<div class="lc-head"><h2 class="lc-h">程序记下的</h2><span class="lc-sub">记录，模型改不了</span></div>
+<div>
+<div class="lc-factrow lc-factrow-first"><span><span class="lc-ref">f-1</span></span><span class="lc-mono">提交 a41c9e2，改动 3 个文件，都在导出模板目录里</span></div>
+<div class="lc-factrow"><span><span class="lc-ref">f-2</span></span><span class="lc-mono">今天 08:51 跑了 pnpm test export，18 过，0 败</span></div>
+<div class="lc-factrow"><span><span class="lc-ref">f-3</span></span><span class="lc-mono">新增 1 条测试：statement-zh.spec.ts</span></div>
+</div>
+<div class="lc-shot">产物预览占位：样例对账单 PDF 第 1 页</div>
+<span><span class="lc-strong">没覆盖到的：</span>发票导出、批量导出。程序没找到它们的中文用例。</span>
+</div>
+</section>
+
+</div>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","default":"lc-light","options":["lc-light","lc-dark"]}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = (this.state && this.state.theme) || this.props.theme || 'lc-light';
+    return {
+      theme: theme,
+      segL: theme === 'lc-light' ? 'lc-seg-i on' : 'lc-seg-i',
+      segD: theme === 'lc-dark' ? 'lc-seg-i on' : 'lc-seg-i',
+      setLight: () => this.setState({ theme: 'lc-light' }),
+      setDark: () => this.setState({ theme: 'lc-dark' })
+    };
+  }
+}
+</script>
+</body>
+</html>
