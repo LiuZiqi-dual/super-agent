@@ -1,0 +1,9 @@
+{
+  "name": "super-agent",
+  "private": true,
+  "type": "module",
+  "description": "Always-on, event-driven AI harness: provider-agnostic brain, restart-safe lane coordinator.",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
