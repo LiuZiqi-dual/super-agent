@@ -20,8 +20,8 @@ import type {
   RecoveryAction,
   RecoveryContext,
   LaneState,
-} from "../types/lane.js";
-import { isTerminal } from "../types/lane.js";
+} from "../types/lane.ts";
+import { isTerminal } from "../types/lane.ts";
 
 export function planRecovery(
   lanes: readonly Lane[],
